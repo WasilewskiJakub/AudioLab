@@ -1,0 +1,217 @@
+﻿<Window x:Class="AudioAnalyser.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AudioAnalyser"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="900" Width="1650" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="Label" x:Key="DetailsLabel1">
+            <Setter Property="FontSize" Value="16px"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="Label" x:Key="DetailsLabel2" BasedOn="{StaticResource ResourceKey=DetailsLabel1}">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style x:Key="PlayButtonStyle" TargetType="Button">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="120px"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="300"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20px"/>
+            <RowDefinition Height="0.8*"/>
+            <RowDefinition Height="50px"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File" >
+                <MenuItem Header="_Open" Click="LoadSong"/>
+                <Separator />
+                <MenuItem Header="_Exit"/>
+            </MenuItem>
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="250px"/>
+                <ColumnDefinition Width="500px"/>
+            </Grid.ColumnDefinitions>
+            <WpfPlot Grid.Column="0" Name="WavPlot"/>
+            <Grid Grid.Column="1">
+                <GroupBox Header="File Details">
+                    <StackPanel Margin="0,20,0,20">
+                        <Grid Height="40px">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70px"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="0" Content="Name:"/>
+                            <Label Name="NameLabel" Style="{StaticResource ResourceKey=DetailsLabel2}" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Height="40px">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70px"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Content="Chanels:" HorizontalAlignment="Center"/>
+                            <Label Name="ChanelsLabel" Style="{StaticResource ResourceKey=DetailsLabel2}" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Height="40px">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70px"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="0" Content="Length:"/>
+                            <Label Name="LengthLabel" Style="{StaticResource ResourceKey=DetailsLabel2}" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Height="40px">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70px"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="0" Content="Size:"/>
+                            <Label Name="SizeLabel" Style="{StaticResource ResourceKey=DetailsLabel2}" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Height="40px">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70px"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="0" Content="Rate:"/>
+                            <Label Name="SampleLabel" Style="{StaticResource ResourceKey=DetailsLabel2}" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Height="40px">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70px"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="0" Content="Interval:"/>
+                            <Label Name="IntervalLabel" Style="{StaticResource ResourceKey=DetailsLabel2}" Grid.Column="1"/>
+                        </Grid>
+
+                        <Button x:Name="Play" Content="Play" Style="{StaticResource PlayButtonStyle}" Click="Play_Click">
+
+                        </Button>
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+            <Grid Grid.Column="2" VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="200px"/>
+                    <RowDefinition Height="150px"/>
+                    <!--<RowDefinition Height="50px"/>-->
+                </Grid.RowDefinitions>
+                <GroupBox Height="200" Header="Frame" VerticalAlignment="Top">
+                    <StackPanel Height="200" Margin="0,20,0,20">
+                        <Grid Height="40px">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100px"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="0" Content="Length [ms]:"/>
+                            <Slider Name="SliderQframe" Grid.Column="1" TickPlacement="BottomRight" VerticalAlignment="Center" Margin="10,0,10,0" IsSnapToTickEnabled="True" TickFrequency="1"  Minimum="45" Value="80" Maximum="1000"/>
+                            <Border Grid.Column="2" BorderBrush="Black" BorderThickness="1">
+                                <TextBox Name="FrameQLabel"  Text="{Binding ElementName=SliderQframe,Path=Value,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="15"/>
+                            </Border>
+                        </Grid>
+                        <Grid Height="40px" Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100px"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="0" Content="Overlapping [%]:"/>
+                            <Slider Name="SliderOverlap" Grid.Column="1" TickPlacement="BottomRight" VerticalAlignment="Center" Margin="10,0,10,0" IsSnapToTickEnabled="True" TickFrequency="1"  Minimum="0" Value="25" Maximum="50"/>
+                            <Border Grid.Column="2" BorderBrush="Black" BorderThickness="1">
+                                <TextBox Name="OverlapLabel"  Text="{Binding ElementName=SliderOverlap,Path=Value,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="15"/>
+                            </Border>
+                        </Grid>
+                        <Button Content="Apply Frames" Height="30" Width="160" Margin="0,10,0,0" Background="Transparent" BorderThickness="2" FontSize="15" Click="Button_Click"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Grid.Row="1" Header="Frame Details:">
+                    <StackPanel>
+                        <Grid Height="40px">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160px"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="0" Content="Default Length:"/>
+                            <Label Name="FrameLengthLabel" Style="{StaticResource ResourceKey=DetailsLabel2}" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Height="40px">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160px"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="0" Content="Impulses:"/>
+                            <Label Name="ImpulseCountLabel" Style="{StaticResource ResourceKey=DetailsLabel2}" Grid.Column="1"/>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+        </Grid>
+        <Separator Grid.Row="0" Height="3" VerticalAlignment="Bottom" Background="Gray"/>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150px"/>
+                <ColumnDefinition Width="550px"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="550"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            
+            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="0" Content="Frame-Level:"/>
+            <ComboBox Name="FrameCombo" SelectionChanged="FrameLevelComboBox" Grid.Column="1" Margin="10">
+                <ComboBoxItem>Volume</ComboBoxItem>
+                <ComboBoxItem>STE (Short Time Energy)</ComboBoxItem>
+                <ComboBoxItem>ZCR (Zero Crossing Rate)</ComboBoxItem>
+                <ComboBoxItem>SR (Silent Ratio)</ComboBoxItem>
+                <ComboBoxItem>F0 (Fundamental Frequency)</ComboBoxItem>
+            </ComboBox>
+
+            <Label Style="{StaticResource ResourceKey=DetailsLabel1}" Grid.Column="2" Content="Clip-Level:"/>
+            <ComboBox Grid.Column="3" Margin="10">
+                <ComboBoxItem IsSelected="True">VSTD</ComboBoxItem>
+                <ComboBoxItem>VDR (Short Time Energy)</ComboBoxItem>
+                <ComboBoxItem>VU (Zero Crossing Rate)</ComboBoxItem>
+                <ComboBoxItem>LSTER</ComboBoxItem>
+                <ComboBoxItem>Fundamental Frequency</ComboBoxItem>
+            </ComboBox>
+            
+            
+        </Grid>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Header="Frame Level" Grid.Column="0">
+                <WpfPlot Name="FrameLevelPlot"/>
+            </GroupBox>
+            
+            <GroupBox Header="Clip Level" Grid.Column="1">
+                <WpfPlot Name="ClipLevelPlot"/>
+            </GroupBox>
+        </Grid>
+    </Grid>
+
+</Window>
